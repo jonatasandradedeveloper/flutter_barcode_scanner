@@ -1,11 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/topLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/black"
     android:keepScreenOn="true">
+
+    <Button
+        android:id="@+id/btnBarcodeCaptureCode"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="30dp"
+        android:width="626dp"
+        android:height="32dp"
+        android:background="@drawable/buttoncode"
+        android:padding="10dp"
+        android:text="Colar da área de transferência: 23793.38128 60053.062215 83000.609202 1 85350000166773"
+        android:textColor="#FFFFFF"
+        android:textSize="12sp" />
 
     <com.amolg.flutterbarcodescanner.camera.CameraSourcePreview
         android:id="@+id/preview"
@@ -18,21 +33,16 @@
             android:layout_height="match_parent"
             android:background="#44000000" />
 
+
     </com.amolg.flutterbarcodescanner.camera.CameraSourcePreview>
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="60dp"
         android:layout_alignParentBottom="true"
-        android:background="@android:color/black">
-
-        <ImageView
-            android:id="@+id/imgViewBarcodeCaptureUseFlash"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_centerInParent="true"
-            android:contentDescription="Flash button"
-            android:src="@drawable/ic_barcode_flash_off" />
+        android:gravity="center"
+        android:orientation="vertical"
+        android:background="@android:color/transparent">
 
         <Button
             android:id="@+id/btnBarcodeCaptureCancel"
@@ -42,11 +52,14 @@
             android:layout_alignParentRight="true"
             android:layout_alignParentBottom="true"
             android:layout_centerVertical="true"
-            android:layout_marginEnd="10dp"
-            android:layout_marginRight="10dp"
-            android:background="@android:color/transparent"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/button"
+            android:padding="10dp"
             android:text="Cancel"
             android:textAllCaps="false"
-            android:textColor="@android:color/white" />
+            android:textColor="#003591"
+            android:topLeftRadius="100dp"
+            tools:bottomLeftRadius="100dp" />
+
     </RelativeLayout>
 </RelativeLayout>
