@@ -22,6 +22,14 @@
         android:textColor="#FFFFFF"
         android:textSize="12sp" />
 
+    <ImageView
+        android:id="@+id/imgViewBarcodeCaptureUseFlash"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_centerInParent="true"
+        android:contentDescription="Flash button"
+        android:src="@drawable/ic_barcode_flash_off" />
+
     <com.amolg.flutterbarcodescanner.camera.CameraSourcePreview
         android:id="@+id/preview"
         android:layout_width="match_parent"
