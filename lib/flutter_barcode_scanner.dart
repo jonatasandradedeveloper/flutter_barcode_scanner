@@ -10,11 +10,9 @@ enum ScanMode { QR, BARCODE, DEFAULT }
 /// This class is an interface between the native Android and iOS classes and a
 /// Flutter project.
 class FlutterBarcodeScanner {
-  static const MethodChannel _channel =
-      MethodChannel('flutter_barcode_scanner');
+  static const MethodChannel _channel = MethodChannel('flutter_barcode_scanner');
 
-  static const EventChannel _eventChannel =
-      EventChannel('flutter_barcode_scanner_receiver');
+  static const EventChannel _eventChannel = EventChannel('flutter_barcode_scanner_receiver');
 
   static Stream? _onBarcodeReceiver;
 
@@ -23,10 +21,13 @@ class FlutterBarcodeScanner {
   /// Shows a scan line with [lineColor] over a scan window. A flash icon is
   /// displayed if [isShowFlashIcon] is true. The text of the cancel button can
   /// be customized with the [cancelButtonText] string.
-  static Future<String> scanBarcode(String lineColor, String cancelButtonText,
-      bool isShowFlashIcon, ScanMode scanMode) async {
+  static Future<String> scanBarcode(
+      String lineColor, String cancelButtonText, String pasteButtonText, bool isShowFlashIcon, ScanMode scanMode) async {
     if (cancelButtonText.isEmpty) {
       cancelButtonText = 'Cancel';
+    }
+    if (pasteButtonText.isEmpty) {
+      pasteButtonText = "Paste: ";
     }
 
     // Pass params to the plugin
@@ -35,13 +36,18 @@ class FlutterBarcodeScanner {
       'cancelButtonText': cancelButtonText,
       'isShowFlashIcon': isShowFlashIcon,
       'isContinuousScan': false,
-      'scanMode': scanMode.index
+      'scanMode': scanMode.index,
+      'pasteButtonText': pasteButtonText
     };
 
     /// Get barcode scan result
-    final barcodeResult =
-        await _channel.invokeMethod('scanBarcode', params) ?? '';
+    final barcodeResult = await _channel.invokeMethod('scanBarcode', params) ?? '';
     return barcodeResult;
+  }
+
+  static Future<String> pasteData() async {
+    final pasteResult = await _channel.invokeMethod('pasteBarcode');
+    return pasteResult;
   }
 
   /// Returns a continuous stream of barcode scans until the user cancels the
@@ -51,8 +57,7 @@ class FlutterBarcodeScanner {
   /// displayed if [isShowFlashIcon] is true. The text of the cancel button can
   /// be customized with the [cancelButtonText] string. Returns a stream of
   /// detected barcode strings.
-  static Stream? getBarcodeStreamReceiver(String lineColor,
-      String cancelButtonText, bool isShowFlashIcon, ScanMode scanMode) {
+  static Stream? getBarcodeStreamReceiver(String lineColor, String cancelButtonText, bool isShowFlashIcon, ScanMode scanMode) {
     if (cancelButtonText.isEmpty) {
       cancelButtonText = 'Cancel';
     }

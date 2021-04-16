@@ -8,17 +8,14 @@
     android:keepScreenOn="true">
 
     <Button
-        android:id="@+id/btnBarcodeCaptureCode"
+        android:id="@+id/btnPasteBarcode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
-        android:width="626dp"
-        android:height="32dp"
+        android:layout_marginTop="10dp"
         android:background="@drawable/buttoncode"
         android:padding="10dp"
-        android:text="Colar da área de transferência: 23793.38128 60053.062215 83000.609202 1 85350000166773"
         android:textColor="#FFFFFF"
         android:textSize="12sp" />
 

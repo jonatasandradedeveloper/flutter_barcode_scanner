@@ -2,9 +2,14 @@ package com.amolg.flutterbarcodescanner;
 
 import android.app.Activity;
 import android.app.Application;
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.DefaultLifecycleObserver;
@@ -115,16 +120,16 @@ public class FlutterBarcodeScannerPlugin implements MethodCallHandler, ActivityR
 
                 isContinuousScan = (boolean) arguments.get("isContinuousScan");
 
-                startBarcodeScannerActivityView((String) arguments.get("cancelButtonText"), isContinuousScan);
+                startBarcodeScannerActivityView((String) arguments.get("cancelButtonText"), (String) arguments.get("pasteButtonText"), isContinuousScan);
             }
         } catch (Exception e) {
             Log.e(TAG, "onMethodCall: " + e.getLocalizedMessage());
         }
     }
 
-    private void startBarcodeScannerActivityView(String buttonText, boolean isContinuousScan) {
+    private void startBarcodeScannerActivityView(String cancelbuttonText, String pasteButtonText, boolean isContinuousScan) {
         try {
-            Intent intent = new Intent(activity, BarcodeCaptureActivity.class).putExtra("cancelButtonText", buttonText);
+            Intent intent = new Intent(activity, BarcodeCaptureActivity.class).putExtra("cancelButtonText", cancelbuttonText).putExtra("pasteButtonText", pasteButtonText);
             if (isContinuousScan) {
                 activity.startActivity(intent);
             } else {
@@ -204,6 +209,16 @@ public class FlutterBarcodeScannerPlugin implements MethodCallHandler, ActivityR
             }
         } catch (Exception e) {
             Log.e(TAG, "onBarcodeScanReceiver: " + e.getLocalizedMessage());
+        }
+    }
+
+    public static void onPasteBarcode(final Barcode barcode){
+        try{
+            if(barcode != null && !barcode.displayValue.isEmpty()){
+                barcodeStream.success(barcode.rawValue);
+            }
+        }catch (Exception e) {
+            Log.e(TAG, "onPasteBarcode: " + e.getLocalizedMessage());
         }
     }
 

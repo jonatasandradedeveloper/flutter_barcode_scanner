@@ -20,6 +20,9 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ClipData;
+import android.content.ClipDescription;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -34,7 +37,6 @@ import androidx.annotation.NonNull;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -124,16 +126,38 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
                 }
             });
 
-            String buttonText = "";
+            String cancelButtonText = "";
+            String pasteButtonText = "";
+
             try {
-                buttonText = (String) getIntent().getStringExtra("cancelButtonText");
+                cancelButtonText = (String) getIntent().getStringExtra("cancelButtonText");
+                pasteButtonText = (String) getIntent().getStringExtra("pasteButtonText");
             } catch (Exception e) {
-                buttonText = "Cancel";
+                cancelButtonText = "Cancel";
+                pasteButtonText = "Paste";
                 Log.e("BCActivity:onCreate()", "onCreate: " + e.getLocalizedMessage());
             }
+
+
+            Button clipboardButton = findViewById(R.id.btnPasteBarcode);
+            clipboardButton.setOnClickListener(this);
+            clipboardButton.setVisibility(View.GONE);
+
+            ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            String pasteData = null;
+
+            if((clipboardManager.hasPrimaryClip()) && (clipboardManager.getPrimaryClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN))){
+                ClipData.Item item = clipboardManager.getPrimaryClip().getItemAt(0);
+                pasteData = item.getText().toString();
+                if(pasteData.startsWith("8") && pasteData.length() >= 40){
+                    clipboardButton.setVisibility(View.VISIBLE);
+                    clipboardButton.setText(pasteButtonText + ": "+ pasteData);
+                }
+            }
+
             imgViewBarcodeCaptureUseFlash = findViewById(R.id.imgViewBarcodeCaptureUseFlash);
             Button btnBarcodeCaptureCancel = findViewById(R.id.btnBarcodeCaptureCancel);
-            btnBarcodeCaptureCancel.setText(buttonText);
+            btnBarcodeCaptureCancel.setText(cancelButtonText);
             btnBarcodeCaptureCancel.setOnClickListener(this);
 
             imgViewBarcodeCaptureUseFlash.setOnClickListener(this);
@@ -238,7 +262,7 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
         // at long distances.
         CameraSource.Builder builder = new CameraSource.Builder(getApplicationContext(), barcodeDetector)
                 .setFacing(CameraSource.CAMERA_FACING_BACK)
-                .setRequestedPreviewSize(1600, 1024)
+                .setRequestedPreviewSize(1000, 700)
                 .setRequestedFps(15.0f);
 
         // make sure that auto focus is an available option
@@ -423,6 +447,25 @@ public final class BarcodeCaptureActivity extends AppCompatActivity implements B
             barcode.displayValue = "-1";
             FlutterBarcodeScannerPlugin.onBarcodeScanReceiver(barcode);
             finish();
+        } else if(i == R.id.btnPasteBarcode){
+            ClipboardManager clipboardManager = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+            String pasteData = null;
+
+            if((clipboardManager.hasPrimaryClip()) && (clipboardManager.getPrimaryClipDescription().hasMimeType(ClipDescription.MIMETYPE_TEXT_PLAIN))){
+                ClipData.Item item = clipboardManager.getPrimaryClip().getItemAt(0);
+                pasteData = item.getText().toString().concat("_P");
+
+                Barcode barcode = new Barcode();
+                barcode.rawValue = pasteData;
+                barcode.displayValue = pasteData;
+                Intent data = new Intent();
+                data.putExtra(BarcodeObject, barcode);
+                setResult(CommonStatusCodes.SUCCESS, data);
+                FlutterBarcodeScannerPlugin.onPasteBarcode(barcode);
+                ClipData nClipData = ClipData.newPlainText("","");
+                clipboardManager.setPrimaryClip(nClipData);
+                finish();
+            }
         }
     }
 
